@@ -36,8 +36,13 @@ namespace Helpers
             
             //metadata en el header
             // problema: SOLO PASA LA KEY => el valor (2parametro no sirve de nada) y no se pueden poner espacios
-            mensaje.Headers.Add("testmetadataUNO", "metadata");
-            mensaje.Headers.Add("testmetadataDOS", "metadata numero 2");
+            mensaje.Headers.Add("facilidad", Formulario.Controls["facilidad"].Text); //facilidad
+            mensaje.Headers.Add("canal", Formulario.Controls["canal"].Text); //facilidad
+            mensaje.Headers.Add("clasiseguridad", Formulario.Controls["clasiseguridad"].Text); //facilidad
+            mensaje.Headers.Add("nrocontrol", Formulario.Controls["nrocontrol"].Text); //facilidad
+            mensaje.Headers.Add("procedencia", Formulario.Controls["procedencia"].Text); //facilidad
+            mensaje.Headers.Add("instransmision", Formulario.Controls["instransmision"].Text); //facilidad
+
             SmtpClient client = new SmtpClient();
             /*
             client.Credentials = new System.Net.NetworkCredential("test@xeta.com.ar", "test712as");
@@ -65,10 +70,12 @@ namespace Helpers
             return true;
         }
 
-        public void recibir()
+        public OpenPop.Mime.Message[] recibir()
         {
             OpenPop.Pop3.Pop3Client client = new OpenPop.Pop3.Pop3Client();
+
             
+
             //client.Connect("mail.xeta.com.ar", 110, false);
             //client.Authenticate("test@xeta.com.ar", "test712as");
 
@@ -76,33 +83,24 @@ namespace Helpers
             client.Authenticate("emgesitm@gmail.com", "sitmemge");
 
             int messageCount = client.GetMessageCount();
-
-
-            
+            OpenPop.Mime.Message[] allMessages = new OpenPop.Mime.Message[messageCount];
+            MessageBox.Show("mensajes recibidos", messageCount.ToString());
             Form formulario = new Form();
-
-            if (client.Connected)
+            
+            if (client.Connected && messageCount > 0)
             {
-                MessageBox.Show("conectado - " + messageCount);
-                Helpers.Cargador carga = new Helpers.Cargador();
-                List<Message> allMessages = new List<Message>(messageCount);
-                for (int i = messageCount; i > 0; i--)
+                int i = 0;
+                for (int j = messageCount; j > 0; j--)
                 {
-                    var mensaje = client.GetMessage(i).Headers.UnknownHeaders[0].ToString(); //trae "testmetadataUNO"
-                    var mensajBIS = client.GetMessage(i).Headers.UnknownHeaders[1].ToString(); //trae "testmetadataDOS"
-                    MessageBox.Show
-                        (
-                        client.GetMessage(i).FindFirstPlainTextVersion().GetBodyAsText(),
-                        client.GetMessage(i).Headers.Subject.ToString()
-                        //client.GetMessage(i).Headers.From.ToString(),
-                        );
-                    //carga.carga(formulario, client);
-                    //formulario.Controls["promotor"].Text = client.GetMessage(i).Headers.To.ToString();
-                }
+                    OpenPop.Mime.Message TEST = client.GetMessage(j);
+                    allMessages[i] = TEST;
+                    i++;
+                }   
             }
             else {
                 MessageBox.Show("no conectado");
             }
+            return allMessages;
         }
     }
 }

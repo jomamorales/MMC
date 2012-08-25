@@ -20,7 +20,19 @@ namespace MyProject
         private void recibir_Load(object sender, EventArgs e)
         {
             Helpers.Mailer mailer = new Helpers.Mailer();
-            mailer.recibir();
+            OpenPop.Mime.Message[] mensajes = mailer.recibir();
+            int i = 0;
+            while (i < mensajes.Length)
+            {  
+               int col =0;
+               OpenPop.Mime.Message mensaje = mensajes[i];
+               this.dataGridView1.Rows.AddCopy(i);
+               DataGridViewRow fila = this.dataGridView1.Rows[i];
+                string algo =mensaje.Headers.UnknownHeaders[(col++)].ToString();
+                fila.Cells[col++].Value = algo;
+                i++;
+               
+            }
             //this.dataGridView1.Rows.Add("3","4");
         }
     }
