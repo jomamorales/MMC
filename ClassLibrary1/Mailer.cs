@@ -21,10 +21,11 @@ namespace Helpers
         public bool enviar(Form Formulario){
             //MessageBox.Show(Formulario.Controls["facilidad"].Text);
             MailMessage mensaje = new MailMessage(
-                Formulario.Controls["promotor"].Text,
-                Formulario.Controls["ejecutivo"].Text
+                //Formulario.Controls["promotor"].Text,
+                //Formulario.Controls["ejecutivo"].Text
                 //"test@xeta.com.ar",
-                //"josemmorales.sysan@gmail.com"
+                "emgesitm@gmail.com",
+                "emgesitm@gmail.com"
                 );
             
             //Asignacion de lo que se envía
@@ -32,7 +33,11 @@ namespace Helpers
             mensaje.Body = Formulario.Controls["texto"].Text;
             mensaje.Subject = Formulario.Controls["canal"].Text;
                 //"Prueba de Envio de MMC";
-                        
+            
+            //metadata en el header
+            // problema: SOLO PASA LA KEY => el valor (2parametro no sirve de nada) y no se pueden poner espacios
+            mensaje.Headers.Add("testmetadataUNO", "metadata");
+            mensaje.Headers.Add("testmetadataDOS", "metadata numero 2");
             SmtpClient client = new SmtpClient();
             /*
             client.Credentials = new System.Net.NetworkCredential("test@xeta.com.ar", "test712as");
@@ -71,21 +76,25 @@ namespace Helpers
             client.Authenticate("emgesitm@gmail.com", "sitmemge");
 
             int messageCount = client.GetMessageCount();
+
+
+            
             Form formulario = new Form();
 
             if (client.Connected)
             {
-                MessageBox.Show("conectado");
+                MessageBox.Show("conectado - " + messageCount);
                 Helpers.Cargador carga = new Helpers.Cargador();
                 List<Message> allMessages = new List<Message>(messageCount);
                 for (int i = messageCount; i > 0; i--)
                 {
+                    var mensaje = client.GetMessage(i).Headers.UnknownHeaders[0].ToString(); //trae "testmetadataUNO"
+                    var mensajBIS = client.GetMessage(i).Headers.UnknownHeaders[1].ToString(); //trae "testmetadataDOS"
                     MessageBox.Show
                         (
                         client.GetMessage(i).FindFirstPlainTextVersion().GetBodyAsText(),
                         client.GetMessage(i).Headers.Subject.ToString()
                         //client.GetMessage(i).Headers.From.ToString(),
-                        //client.GetMessage(i).Headers.To.ToString()
                         );
                     //carga.carga(formulario, client);
                     //formulario.Controls["promotor"].Text = client.GetMessage(i).Headers.To.ToString();
